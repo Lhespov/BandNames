@@ -555,6 +555,141 @@ h1 {
   gap: 0.7rem;
 }
 
+.cull-card {
+  background: var(--paper-2);
+  border: 2px solid var(--ink);
+  padding: 1.4rem 1.6rem;
+  margin-bottom: 2.5rem;
+  max-width: 500px;
+  width: 100%;
+  text-align: left;
+  box-shadow: 0 4px 0 var(--ink), 0 10px 25px -8px var(--shadow);
+}
+
+.cull-label {
+  font-family: 'Special Elite', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin-bottom: 0.5rem;
+}
+
+.cull-info {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 1.1rem;
+  color: var(--ink);
+  margin-bottom: 0.4rem;
+}
+
+.cull-info strong {
+  font-style: normal;
+  color: var(--blood);
+}
+
+.cull-sub {
+  font-family: 'Old Standard TT', serif;
+  font-style: italic;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  margin-bottom: 1rem;
+  line-height: 1.4;
+}
+
+.cull-screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1rem 0 2rem;
+  min-height: 0;
+}
+
+.cull-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid var(--ink);
+  position: sticky;
+  top: 0;
+  background: var(--paper);
+  z-index: 10;
+}
+
+.cull-stats {
+  font-family: 'Special Elite', monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  text-align: center;
+}
+
+.cull-stats strong {
+  color: var(--blood);
+  font-weight: normal;
+}
+
+.cull-stats-divider { margin: 0 0.5rem; opacity: 0.4; }
+
+.cull-search {
+  font-family: 'Old Standard TT', serif;
+  font-size: 1rem;
+  padding: 0.6rem 0.9rem;
+  border: 1.5px solid var(--ink);
+  background: var(--paper-2);
+  color: var(--ink);
+  width: 100%;
+  border-radius: 0;
+  outline: none;
+}
+
+.cull-search:focus { border-color: var(--blood); }
+
+.cull-buttons {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: center;
+}
+
+.cull-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.4rem;
+  overflow-y: auto;
+}
+
+.cull-item {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.05rem;
+  padding: 0.55rem 0.8rem;
+  background: var(--paper-2);
+  border: 1px solid rgba(20,17,13,0.2);
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s ease;
+  line-height: 1.2;
+}
+
+.cull-item:hover {
+  border-color: var(--blood);
+  background: var(--paper-3);
+}
+
+.cull-item.excluded {
+  text-decoration: line-through;
+  color: rgba(20,17,13,0.35);
+  background: var(--paper);
+  border-color: rgba(20,17,13,0.08);
+  text-decoration-color: var(--blood);
+  text-decoration-thickness: 1.5px;
+}
+
 .winner-screen {
   flex: 1;
   display: flex;
@@ -716,6 +851,11 @@ footer {
   .setup-sub { font-size: 0.85rem; margin-bottom: 1.5rem; }
   .modal { padding: 1.5rem 1.2rem; }
   .modal h3 { font-size: 1.4rem; }
+  .cull-card { padding: 1.1rem 1.2rem; }
+  .cull-list { grid-template-columns: repeat(2, 1fr); gap: 0.35rem; }
+  .cull-item { font-size: 0.95rem; padding: 0.6rem 0.7rem; }
+  .cull-screen { padding: 0.5rem 0 1.5rem; }
+  .cull-toolbar { padding-bottom: 0.7rem; margin-bottom: 0.7rem; }
 }
 </style>
 </head>
@@ -749,6 +889,26 @@ let history = []; // for undo — stack of state snapshots
 let starred = []; // names manually saved by the user
 
 const STORAGE_KEY = 'band-name-tournament-v1';
+const EXCLUDED_KEY = 'band-name-excluded-v1';
+
+function loadExcluded() {
+  try {
+    const raw = localStorage.getItem(EXCLUDED_KEY);
+    if (!raw) return [];
+    return JSON.parse(raw) || [];
+  } catch(e) { return []; }
+}
+
+function saveExcluded(list) {
+  try {
+    localStorage.setItem(EXCLUDED_KEY, JSON.stringify(list));
+  } catch(e) {}
+}
+
+function activeNames() {
+  const excluded = new Set(loadExcluded());
+  return NAMES.filter(n => !excluded.has(n));
+}
 
 function saveState() {
   if (totalNames === 0 && starred.length === 0) return;
@@ -803,6 +963,9 @@ function renderSetup() {
     'Single elimination. Pick the winner of each duel. Losers are gone forever. One name will remain.';
 
   const saved = loadState();
+  const excluded = loadExcluded();
+  const poolSize = NAMES.length - excluded.length;
+
   let resumeBlock = '';
   if (saved && saved.totalNames > 0) {
     const remaining = (saved.bracket?.length || 0) + (saved.nextRound?.length || 0) + 2;
@@ -821,20 +984,34 @@ function renderSetup() {
     `;
   }
 
+  const cullBlock = `
+    <div class="cull-card">
+      <div class="cull-label">Trim the pool first</div>
+      <div class="cull-info">
+        ${excluded.length > 0
+          ? `<strong>${poolSize}</strong> of ${NAMES.length} names active · ${excluded.length} excluded`
+          : `<strong>${NAMES.length}</strong> names in the pool`}
+      </div>
+      <div class="cull-sub">Glance through the whole list, tap to exclude names you know you don't want. Your exclusions are saved.</div>
+      <button class="btn btn-blood" id="cull-btn">${excluded.length > 0 ? 'Edit excluded list' : 'Cull the list'}</button>
+    </div>
+  `;
+
   const sizes = [
     { n: 16, label: 'Quick', desc: '15 picks · ~2 min' },
     { n: 32, label: 'Short', desc: '31 picks · ~5 min' },
     { n: 64, label: 'Medium', desc: '63 picks · ~10 min' },
     { n: 128, label: 'Long', desc: '127 picks · ~20 min' },
     { n: 256, label: 'Marathon', desc: '255 picks · ~40 min' },
-    { n: NAMES.length, label: 'All-In', desc: (NAMES.length - 1) + ' picks · everything' }
-  ];
+    { n: poolSize, label: 'All-In', desc: (poolSize - 1) + ' picks · everything' }
+  ].filter(s => s.n >= 2 && s.n <= poolSize);
 
   document.getElementById('screen').innerHTML = `
     <div class="setup">
       ${resumeBlock}
+      ${cullBlock}
       <h2>${saved ? 'Or start fresh' : 'Pick a bracket size'}</h2>
-      <p class="setup-sub">A random selection from all ${NAMES.length} names will compete. Your progress saves automatically — close the tab and come back anytime.</p>
+      <p class="setup-sub">Random selection from your active pool of ${poolSize} names. Progress saves automatically — close the tab and come back anytime.</p>
       <div class="size-grid">
         ${sizes.map(s => `
           <div class="size-card" data-size="${s.n}">
@@ -854,6 +1031,8 @@ function renderSetup() {
     });
   });
 
+  document.getElementById('cull-btn').addEventListener('click', renderCull);
+
   if (saved) {
     document.getElementById('resume-btn').addEventListener('click', () => {
       bracket = saved.bracket;
@@ -869,7 +1048,6 @@ function renderSetup() {
       busy = false;
       document.getElementById('subtitle').textContent =
         'Two names enter. One stays. Last name standing wins.';
-      // if there's a pending duel saved, redraw it; otherwise draw next
       if (pendingA && pendingB) {
         renderDuel(pendingA, pendingB);
       } else {
@@ -885,9 +1063,89 @@ function renderSetup() {
   }
 }
 
+function renderCull() {
+  document.getElementById('subtitle').textContent =
+    'Tap any name to exclude it from the tournament. Tap again to bring it back.';
+
+  const excluded = new Set(loadExcluded());
+
+  document.getElementById('screen').innerHTML = `
+    <div class="cull-screen">
+      <div class="cull-toolbar">
+        <div class="cull-stats">
+          <span><strong id="cull-active">${NAMES.length - excluded.size}</strong> active</span>
+          <span class="cull-stats-divider">·</span>
+          <span><strong id="cull-excluded">${excluded.size}</strong> excluded</span>
+        </div>
+        <input type="text" class="cull-search" id="cull-search" placeholder="Search names…" autocomplete="off">
+        <div class="cull-buttons">
+          <button class="btn" id="cull-restore">Restore all</button>
+          <button class="btn btn-blood" id="cull-done">Done</button>
+        </div>
+      </div>
+      <div class="cull-list" id="cull-list"></div>
+    </div>
+  `;
+
+  const listEl = document.getElementById('cull-list');
+  // build once for performance
+  function build(filter = '') {
+    const q = filter.trim().toLowerCase();
+    const frag = document.createDocumentFragment();
+    NAMES.forEach((name, i) => {
+      if (q && !name.toLowerCase().includes(q)) return;
+      const div = document.createElement('div');
+      div.className = 'cull-item' + (excluded.has(name) ? ' excluded' : '');
+      div.textContent = name;
+      div.dataset.name = name;
+      div.addEventListener('click', () => {
+        if (excluded.has(name)) {
+          excluded.delete(name);
+          div.classList.remove('excluded');
+        } else {
+          excluded.add(name);
+          div.classList.add('excluded');
+        }
+        saveExcluded([...excluded]);
+        document.getElementById('cull-active').textContent = NAMES.length - excluded.size;
+        document.getElementById('cull-excluded').textContent = excluded.size;
+      });
+      frag.appendChild(div);
+    });
+    listEl.innerHTML = '';
+    listEl.appendChild(frag);
+  }
+
+  build();
+
+  let searchTimer;
+  document.getElementById('cull-search').addEventListener('input', (e) => {
+    clearTimeout(searchTimer);
+    const v = e.target.value;
+    searchTimer = setTimeout(() => build(v), 100);
+  });
+
+  document.getElementById('cull-restore').addEventListener('click', () => {
+    if (excluded.size === 0) return;
+    if (confirm(`Restore all ${excluded.size} excluded names?`)) {
+      excluded.clear();
+      saveExcluded([]);
+      document.getElementById('cull-search').value = '';
+      build();
+      document.getElementById('cull-active').textContent = NAMES.length;
+      document.getElementById('cull-excluded').textContent = 0;
+    }
+  });
+
+  document.getElementById('cull-done').addEventListener('click', renderSetup);
+}
+
 function startTournament(size) {
-  totalNames = size;
-  bracket = shuffle([...NAMES]).slice(0, size);
+  const pool = activeNames();
+  // clamp size if user excluded so many that the requested size exceeds remaining
+  const actualSize = Math.min(size, pool.length);
+  totalNames = actualSize;
+  bracket = shuffle([...pool]).slice(0, actualSize);
   nextRound = [];
   totalPicks = 0;
   runnersUp = [];
