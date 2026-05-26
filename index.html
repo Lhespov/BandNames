@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Which One — Band Name Tournament</title>
+<title>Band Name Picker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,700&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Special+Elite&display=swap" rel="stylesheet">
@@ -690,6 +690,47 @@ h1 {
   text-decoration-thickness: 1.5px;
 }
 
+.custom-add-row {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.custom-add-row .cull-search {
+  flex: 1;
+}
+
+.cull-item.custom-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  border-left: 3px solid var(--blood);
+}
+
+.custom-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.3rem;
+  line-height: 1;
+  padding: 0 0.3rem;
+  color: rgba(20,17,13,0.35);
+  font-family: serif;
+  flex-shrink: 0;
+}
+
+.custom-remove:hover { color: var(--blood); }
+
+.custom-empty {
+  font-family: 'Old Standard TT', serif;
+  font-style: italic;
+  color: var(--ink-soft);
+  text-align: center;
+  padding: 2rem 0;
+  grid-column: 1 / -1;
+}
+
 .winner-screen {
   flex: 1;
   display: flex;
@@ -863,18 +904,17 @@ footer {
 
 <div class="container">
   <header>
-    <div class="eyebrow">Choose · Or · Be · Chosen</div>
-    <h1>Which One.</h1>
-    <p class="subtitle" id="subtitle">Single elimination. Pick the winner of each duel. Losers are gone forever. One name will remain.</p>
+    <h1>Band Name Picker</h1>
+    <p class="subtitle" id="subtitle">Pick the winner of each matchup. Losers drop. One name left at the end.</p>
   </header>
 
   <div id="screen"></div>
 
-  <footer id="footer">1,423 contenders · Single elimination</footer>
+  <footer id="footer"></footer>
 </div>
 
 <script>
-const NAMES = ["Mildew Crown", "Pissfly", "Sister Diesel", "Tarpit Sermon", "Roach Motel Bride", "Wormwood Sunday", "Concrete Madonna", "Gutterhymn", "Mason Jar Saint", "The Slow Drown", "Fiberglass Jesus", "Hogtied Angel", "Antifreeze Hymn", "Rust Communion", "Mop Water", "Lard Cathedral", "Drywall Prophet", "Sour Milkmaid", "Pawnshop Crucifix", "Carpet Burn Choir", "Wet Linoleum", "Tooth Necklace", "Trailer Pyre", "Diesel Widow", "Gasoline Lullaby", "Mothball Saint", "The Rendering Plant", "Quaalude Easter", "Asbestos Daughter", "Sinkhole Bride", "Drain Cleaner Bride", "Hogfat Sermon", "The Wet Pew", "Kitchen Knife Choir", "Bleach Mother", "Pesticide Sunday", "Crawlspace Saint", "Lye Baptism", "Trailer Park Pieta", "Greasetrap", "Funeral Roach", "Mildewed Veil", "The Drowning Pool Boy", "Embalmed Daisy", "Suicide Casserole", "Vinyl Siding Christ", "Possum Communion", "Aunt Rotgut", "The Splinter Choir", "Tampon Crucifix", "Methadone Mary", "Cat Piss Cathedral", "Sister Asphalt", "The Boiled Bride", "Hambone Halo", "Wet Mattress", "Formaldehyde Prom", "Septic Hymn", "Roadkill Rosary", "The Yellow Tooth", "Cinderblock Magdalene", "Drano Lullaby", "Tetanus Sunday", "Mop Bucket Madonna", "Linoleum Wound", "Sweatstain Saint", "The Cousin Marriage", "Plywood Coffin", "Spitwad Christ", "Rat King Easter", "Soggy Lazarus", "Wet Drywall", "The Damp Pew", "Mildew Veil", "Bathwater Christ", "Sweat Lodge Saint", "Rusted Faucet", "Leak Stain Madonna", "Wet Carpet Wedding", "The Stagnant", "Pondscum Bride", "Boiled Linen", "Saliva Chapel", "Mop Sermon", "Rainrot", "Slug Trail Communion", "Aunt Strychnine", "Cousin Roadkill", "The Possum Wife", "Trailer Hitch Jesus", "Meth Mother Mary", "Doublewide Christ", "Tobacco Spit Saint", "Yard Sale Funeral", "Carport Crucifixion", "Step-Daddy Long Legs", "Aluminum Siding Saint", "Lawn Chair Pieta", "Gravel Lot Bride", "Coupon Funeral", "Tooth Garden", "Goiter", "The Cleft", "Wisdom Tooth Wedding", "Phantom Limb Choir", "Crawling Skin", "Boil Lance", "Stillborn Lullaby", "Tonsil Stone", "The Bedsore", "Ingrown", "Gangrene Sunday", "Hospice Bride", "Catheter Christ", "Particleboard Pieta", "PVC Crown", "Sheetrock Saint", "Tarpaper Bride", "Caulk Gun Christ", "Galvanized Magdalene", "Spackle", "Linoleum Choir", "Pegboard Prophet", "Nail Gun Lullaby", "Roofing Tar Sunday", "The Soft Apostle", "Wormwood Choir", "Salt Pillar Bride", "Goat's Milk Communion", "Pew Splinter", "Holy Greasestain", "Stigmata Garden", "Censer Smoke Widow", "The Sour Eucharist", "Backwoods Madonna", "Tongue Speaking Bride", "Snakehandler's Daughter", "Benzo Easter", "Nyquil Wedding", "The Robitussin Bride", "Xanax Magdalene", "Quaalude Choir", "Sudafed Saint", "Cough Syrup Sunday", "Adderall Pieta", "Paint Thinner Bride", "Turpentine Lullaby", "Naphtha Madonna", "Silverfish Sermon", "The Tick Bride", "Maggot Veil", "Centipede Christ", "Earwig Choir", "Flytrap Madonna", "Cockroach Communion", "Brown Recluse Weather", "Tornado Watch Bride", "Heatstroke Sunday", "Brownwater Sky", "Smog Choir", "Humidity Saint", "Drought Madonna", "Gristle", "Maw", "Wetwork", "Hogslop", "Bonemeal", "Cesspit", "Slag Saint", "The Stain", "Cinder Block Head", "Paul Mauled", "The Freak Parade", "Kill The Freaks", "Survived By Rape", "Yellow River", "Plywood Christ", "Brain Bucket", "Blackwater", "Blood of the Lamb", "Gas Huffer", "Babyteeth", "Freakshow", "Daddy Long Legs", "Kerosene Bride", "Graveflower", "Saint Elmo's Fire", "Wet Degenerate", "The Other Woman", "Lithium", "Dead Water", "Sludge Pond", "Wet Cigarette", "Bloody Mary", "Blacklung", "Drainmouth", "Dope Fiend", "Backwater", "Codeine Sunday"];
+const NAMES = ["Mildew Crown", "Pissfly", "Sister Diesel", "Tarpit Sermon", "Roach Motel Bride", "Wormwood Sunday", "Concrete Madonna", "Gutterhymn", "Mason Jar Saint", "The Slow Drown", "Fiberglass Jesus", "Hogtied Angel", "Antifreeze Hymn", "Rust Communion", "Mop Water", "Lard Cathedral", "Drywall Prophet", "Sour Milkmaid", "Pawnshop Crucifix", "Carpet Burn Choir", "Wet Linoleum", "Tooth Necklace", "Trailer Pyre", "Diesel Widow", "Gasoline Lullaby", "Mothball Saint", "The Rendering Plant", "Quaalude Easter", "Asbestos Daughter", "Sinkhole Bride", "Drain Cleaner Bride", "Hogfat Sermon", "The Wet Pew", "Kitchen Knife Choir", "Bleach Mother", "Pesticide Sunday", "Crawlspace Saint", "Lye Baptism", "Trailer Park Pieta", "Greasetrap", "Funeral Roach", "Mildewed Veil", "The Drowning Pool Boy", "Embalmed Daisy", "Suicide Casserole", "Vinyl Siding Christ", "Possum Communion", "Aunt Rotgut", "The Splinter Choir", "Tampon Crucifix", "Methadone Mary", "Cat Piss Cathedral", "Sister Asphalt", "The Boiled Bride", "Hambone Halo", "Wet Mattress", "Formaldehyde Prom", "Septic Hymn", "Roadkill Rosary", "The Yellow Tooth", "Cinderblock Magdalene", "Drano Lullaby", "Tetanus Sunday", "Mop Bucket Madonna", "Linoleum Wound", "Sweatstain Saint", "The Cousin Marriage", "Plywood Coffin", "Spitwad Christ", "Rat King Easter", "Soggy Lazarus", "Wet Drywall", "The Damp Pew", "Mildew Veil", "Bathwater Christ", "Sweat Lodge Saint", "Rusted Faucet", "Leak Stain Madonna", "Wet Carpet Wedding", "The Stagnant", "Pondscum Bride", "Boiled Linen", "Saliva Chapel", "Mop Sermon", "Rainrot", "Slug Trail Communion", "Aunt Strychnine", "Cousin Roadkill", "The Possum Wife", "Trailer Hitch Jesus", "Meth Mother Mary", "Doublewide Christ", "Tobacco Spit Saint", "Yard Sale Funeral", "Carport Crucifixion", "Step-Daddy Long Legs", "Aluminum Siding Saint", "Lawn Chair Pieta", "Gravel Lot Bride", "Coupon Funeral", "Tooth Garden", "Goiter", "The Cleft", "Wisdom Tooth Wedding", "Phantom Limb Choir", "Crawling Skin", "Boil Lance", "Stillborn Lullaby", "Tonsil Stone", "The Bedsore", "Ingrown", "Gangrene Sunday", "Hospice Bride", "Catheter Christ", "Particleboard Pieta", "PVC Crown", "Sheetrock Saint", "Tarpaper Bride", "Caulk Gun Christ", "Galvanized Magdalene", "Spackle", "Linoleum Choir", "Pegboard Prophet", "Nail Gun Lullaby", "Roofing Tar Sunday", "The Soft Apostle", "Wormwood Choir", "Salt Pillar Bride", "Goat's Milk Communion", "Pew Splinter", "Holy Greasestain", "Stigmata Garden", "Censer Smoke Widow", "The Sour Eucharist", "Backwoods Madonna", "Tongue Speaking Bride", "Snakehandler's Daughter", "Benzo Easter", "Nyquil Wedding", "The Robitussin Bride", "Xanax Magdalene", "Quaalude Choir", "Sudafed Saint", "Cough Syrup Sunday", "Adderall Pieta", "Paint Thinner Bride", "Turpentine Lullaby", "Naphtha Madonna", "Silverfish Sermon", "The Tick Bride", "Maggot Veil", "Centipede Christ", "Earwig Choir", "Flytrap Madonna", "Cockroach Communion", "Brown Recluse Weather", "Tornado Watch Bride", "Heatstroke Sunday", "Brownwater Sky", "Smog Choir", "Humidity Saint", "Drought Madonna", "Gristle", "Maw", "Wetwork", "Hogslop", "Bonemeal", "Cesspit", "Slag Saint", "The Stain", "Cinder Block Head", "Paul Mauled", "The Freak Parade", "Kill The Freaks", "Survived By Rape", "Yellow River", "Plywood Christ", "Brain Bucket", "Blackwater", "Blood of the Lamb", "Gas Huffer", "Babyteeth", "Freakshow", "Daddy Long Legs", "Kerosene Bride", "Graveflower", "Saint Elmo's Fire", "Wet Degenerate", "The Other Woman", "Lithium", "Dead Water", "Sludge Pond", "Wet Cigarette", "Bloody Mary", "Blacklung", "Drainmouth", "Dope Fiend", "Backwater", "Codeine Sunday", "Svrdlo za Meso", "The Feral Notaries", "Dumpster Homily", "Mlečni Put Gori", "The Grim Upholsterers", "Šaputanje u Betonu", "The Paperwork", "Gristle & Hymn", "The Moth Prosecutors", "The Scab Collectors", "Phantom Housewife", "The Wretched Gardeners", "Korov i Dim", "The Attic Theorists", "Vomit Waltz", "Moth Bureaucracy", "Funeral Brunch", "Grim Laundry", "Rust on Porcelain", "The Broken Apiarists", "Kettle Séance", "Bile & Lace", "Gutter Philosophy", "Abscess Waltz", "Screaming Plywood", "The Bone Orchestra", "Čekić i Leptir", "Pustinja u Glavi", "Necrotic Confetti", "The Upstairs Tenants of Hell", "Amateur Hour at the Void", "Sludge Operetta", "The Howling Beige", "Organ Donor Jukebox", "The Sleepy Cannibals", "Crow Formalism", "Pelvis of the Cosmos", "Spore Lord", "Damp Wizard", "Cremation Hobby", "Tumor Disco", "The Worm Accountants", "The Weeping Caulkers", "Vrtložak", "Chalk Outline Choir", "Spavalica bez Snova", "Zublja u Blatu", "Blood Typewriter", "Krivudava Istina", "Džungla od Žice", "Betonska Kolijevka", "Čorba od Pepela", "Limena Svetlost", "Žičana Ograda", "Smrtonosna Melodija", "Tinja Ispod Kože", "Prašina i Vjera", "Magla nad Gradom", "Smrt Ima Dobar Glas", "Prljavština i Milost", "Ledena Voda u Grudima", "Jesus Wept (We Laughed)", "Socially Acceptable Meltdown", "Dad's Weird Handshake", "Tuesday at the Abattoir", "Convenient Amnesia", "Your Therapist's Therapist", "Aggressive Beige", "Spite Nap", "The Load-Bearing Walls of Sorrow", "Breakfast at the Morgue", "Definitely Not a Cult", "HR Department of the Underworld", "Slightly Below Average", "Too Many Tabs Open", "The Deeply Unbothered", "Pleasant Enough", "Middle Management Shaman", "Irony Deficiency", "Wrong Funeral", "Politely Furious", "Junk Mail Jesus", "Kriva Kičma", "Zaboravljena Pesma u Liftu", "Ima Nešto u Zidovima", "Živ Sahranjeni", "Crni Kvadrat na Bijelom Zidu", "Rupa u Podu", "Sunce Izlazi Pogrešno", "Mrtvi Anđeli", "Plinski Gigant", "Goat Mileage", "Mlečni Zub", "Dva Točka", "Knežopoljka", "Glove Compartment", "Mlin Za Papriku", "Diet of Worms", "Patron Saint of Asphalt", "Hodočasnik", "Foxglove Conspiracy", "Krezuba Ribarka", "Suđenice", "Krug Dvojke", "Trešnjev Cvet", "Sumporna Kiselina", "Slatka Smrt", "Krš I Lom", "Šljaka", "Brusnica", "Krijesnice", "Sumporne Suze", "Bele Vrane", "Crnogorka", "Brick by Brick by Brick", "Dial M for Mongoose", "Mlinarski Plač", "Vampire Bus", "Funeral Karaoke", "Svinjska Kosmika", "Svrdlo i Praznina", "Sveta Prljavština", "Svinjska Frekvencija", "Sveta Entropija", "Everything Tastes Like Copper", "I Dreamed I Was a Building", "We Used to Have Mouths", "My Body is a Filing Cabinet", "Nobody Survives the Focus Group", "You Are Being Transferred", "This Is Not an Emergency", "Your Call Is Important to Us", "The Complaint Department Is Closed", "Press 1 to Repeat This Message", "I Applied for a Soul and Was Denied", "The Queue Has No End", "The Committee on Dying", "Approved for Immediate Regret", "The Office of Unfinished Business", "Please Verify Your Humanity", "File Not Found", "The Hard Drive Remembers Everything", "Spinning Wheel of Doom", "Kernel Panic", "Safe Mode Forever", "Malware of the Heart", "The Virus Was Loneliness", "The Pipeline Broke on Tuesday", "Svinja Na Mesecu", "Skull Parenthesis", "Teeth of the Census", "Mossy Guillotine", "Vuk Bez Glave", "Beige Nihilism", "Gallstone Serenade", "Pus Ballet", "Piss Crown"];
 
 let bracket = [];
 let nextRound = [];
@@ -907,7 +947,36 @@ function saveExcluded(list) {
 
 function activeNames() {
   const excluded = new Set(loadExcluded());
-  return NAMES.filter(n => !excluded.has(n));
+  return allNames().filter(n => !excluded.has(n));
+}
+
+const CUSTOM_KEY = 'band-name-custom-v1';
+
+function loadCustom() {
+  try {
+    const raw = localStorage.getItem(CUSTOM_KEY);
+    if (!raw) return [];
+    return JSON.parse(raw) || [];
+  } catch(e) { return []; }
+}
+
+function saveCustom(list) {
+  try {
+    localStorage.setItem(CUSTOM_KEY, JSON.stringify(list));
+  } catch(e) {}
+}
+
+function allNames() {
+  // master pool = built-in NAMES + user-added customs (deduped)
+  const seen = new Set(NAMES);
+  const out = [...NAMES];
+  for (const n of loadCustom()) {
+    if (!seen.has(n)) {
+      seen.add(n);
+      out.push(n);
+    }
+  }
+  return out;
 }
 
 function saveState() {
@@ -960,18 +1029,21 @@ function shuffle(arr) {
 
 function renderSetup() {
   document.getElementById('subtitle').textContent =
-    'Single elimination. Pick the winner of each duel. Losers are gone forever. One name will remain.';
+    'Pick the winner of each matchup. Losers drop. One name left at the end.';
 
   const saved = loadState();
+  const master = allNames();
+  const masterSet = new Set(master);
   // clean stale exclusions
-  const masterSet = new Set(NAMES);
   let rawExcluded = loadExcluded();
   const cleanedExcluded = rawExcluded.filter(n => masterSet.has(n));
   if (cleanedExcluded.length !== rawExcluded.length) {
     saveExcluded(cleanedExcluded);
   }
   const excluded = cleanedExcluded;
-  const poolSize = NAMES.length - excluded.length;
+  const totalCount = master.length;
+  const poolSize = totalCount - excluded.length;
+  const customCount = loadCustom().length;
 
   let resumeBlock = '';
   if (saved && saved.totalNames > 0) {
@@ -981,7 +1053,7 @@ function renderSetup() {
     resumeBlock = `
       <div class="resume-card">
         <div class="resume-label">Saved Tournament</div>
-        <div class="resume-info">${saved.totalNames} contenders · ${eliminated} picks made · ${remaining} remaining</div>
+        <div class="resume-info">${saved.totalNames} names · ${eliminated} picks made · ${remaining} left</div>
         <div class="resume-date">Last played ${date}</div>
         <div class="resume-buttons">
           <button class="btn btn-blood" id="resume-btn">Resume</button>
@@ -993,14 +1065,27 @@ function renderSetup() {
 
   const cullBlock = `
     <div class="cull-card">
-      <div class="cull-label">Trim the pool first</div>
+      <div class="cull-label">Cull the list</div>
       <div class="cull-info">
         ${excluded.length > 0
-          ? `<strong>${poolSize}</strong> of ${NAMES.length} names active · ${excluded.length} excluded`
-          : `<strong>${NAMES.length}</strong> names in the pool`}
+          ? `<strong>${poolSize}</strong> of ${totalCount} names active · ${excluded.length} excluded`
+          : `<strong>${totalCount}</strong> names in the pool`}
       </div>
-      <div class="cull-sub">Glance through the whole list, tap to exclude names you know you don't want. Your exclusions are saved.</div>
-      <button class="btn btn-blood" id="cull-btn">${excluded.length > 0 ? 'Edit excluded list' : 'Cull the list'}</button>
+      <div class="cull-sub">Skim the full list and exclude names you already know you don't want. Saves automatically.</div>
+      <button class="btn btn-blood" id="cull-btn">${excluded.length > 0 ? 'Edit excluded list' : 'Open list'}</button>
+    </div>
+  `;
+
+  const customBlock = `
+    <div class="cull-card">
+      <div class="cull-label">Add your own</div>
+      <div class="cull-info">
+        ${customCount > 0
+          ? `<strong>${customCount}</strong> custom name${customCount === 1 ? '' : 's'} added`
+          : `No custom names yet`}
+      </div>
+      <div class="cull-sub">Add names you've come up with. They join the pool and compete like the rest.</div>
+      <button class="btn btn-blood" id="custom-btn">${customCount > 0 ? 'Manage' : 'Add names'}</button>
     </div>
   `;
 
@@ -1017,8 +1102,9 @@ function renderSetup() {
     <div class="setup">
       ${resumeBlock}
       ${cullBlock}
-      <h2>${saved ? 'Or start fresh' : 'Pick a bracket size'}</h2>
-      <p class="setup-sub">Random selection from your active pool of ${poolSize} names. Progress saves automatically — close the tab and come back anytime.</p>
+      ${customBlock}
+      <h2>${saved ? 'Or start fresh' : 'Bracket size'}</h2>
+      <p class="setup-sub">${poolSize} names available. Pick how many to put in the bracket — they'll be drawn at random. Progress saves as you go.</p>
       <div class="size-grid">
         ${sizes.map(s => `
           <div class="size-card" data-size="${s.n}">
@@ -1039,6 +1125,7 @@ function renderSetup() {
   });
 
   document.getElementById('cull-btn').addEventListener('click', renderCull);
+  document.getElementById('custom-btn').addEventListener('click', renderCustom);
 
   if (saved) {
     document.getElementById('resume-btn').addEventListener('click', () => {
@@ -1054,7 +1141,7 @@ function renderSetup() {
       starred = saved.starred || [];
       busy = false;
       document.getElementById('subtitle').textContent =
-        'Two names enter. One stays. Last name standing wins.';
+        'Pick the winner. The loser is out.';
       if (pendingA && pendingB) {
         renderDuel(pendingA, pendingB);
       } else {
@@ -1072,10 +1159,11 @@ function renderSetup() {
 
 function renderCull() {
   document.getElementById('subtitle').textContent =
-    'Tap any name to exclude it from the tournament. Tap again to bring it back.';
+    'Tap a name to exclude it. Tap again to bring it back.';
 
+  const master = allNames();
   // clean stale exclusions (names no longer in the master list)
-  const masterSet = new Set(NAMES);
+  const masterSet = new Set(master);
   let rawExcluded = loadExcluded();
   const cleaned = rawExcluded.filter(n => masterSet.has(n));
   if (cleaned.length !== rawExcluded.length) {
@@ -1087,7 +1175,7 @@ function renderCull() {
     <div class="cull-screen">
       <div class="cull-toolbar">
         <div class="cull-stats">
-          <span><strong id="cull-active">${NAMES.length - excluded.size}</strong> active</span>
+          <span><strong id="cull-active">${master.length - excluded.size}</strong> active</span>
           <span class="cull-stats-divider">·</span>
           <span><strong id="cull-excluded">${excluded.size}</strong> excluded</span>
         </div>
@@ -1102,11 +1190,10 @@ function renderCull() {
   `;
 
   const listEl = document.getElementById('cull-list');
-  // build once for performance
   function build(filter = '') {
     const q = filter.trim().toLowerCase();
     const frag = document.createDocumentFragment();
-    NAMES.forEach((name, i) => {
+    master.forEach((name, i) => {
       if (q && !name.toLowerCase().includes(q)) return;
       const div = document.createElement('div');
       div.className = 'cull-item' + (excluded.has(name) ? ' excluded' : '');
@@ -1121,7 +1208,7 @@ function renderCull() {
           div.classList.add('excluded');
         }
         saveExcluded([...excluded]);
-        document.getElementById('cull-active').textContent = NAMES.length - excluded.size;
+        document.getElementById('cull-active').textContent = master.length - excluded.size;
         document.getElementById('cull-excluded').textContent = excluded.size;
       });
       frag.appendChild(div);
@@ -1146,12 +1233,123 @@ function renderCull() {
       saveExcluded([]);
       document.getElementById('cull-search').value = '';
       build();
-      document.getElementById('cull-active').textContent = NAMES.length;
+      document.getElementById('cull-active').textContent = master.length;
       document.getElementById('cull-excluded').textContent = 0;
     }
   });
 
   document.getElementById('cull-done').addEventListener('click', renderSetup);
+}
+
+function renderCustom() {
+  document.getElementById('subtitle').textContent =
+    'Add your own names. They join the pool and compete like the rest.';
+
+  let customs = loadCustom();
+  const builtInSet = new Set(NAMES);
+
+  document.getElementById('screen').innerHTML = `
+    <div class="cull-screen">
+      <div class="cull-toolbar">
+        <div class="cull-stats">
+          <span><strong id="custom-count">${customs.length}</strong> custom · <strong>${NAMES.length}</strong> built-in</span>
+        </div>
+        <div class="custom-add-row">
+          <input type="text" class="cull-search" id="custom-input" placeholder="Type a name…" autocomplete="off">
+          <button class="btn btn-blood" id="custom-add">Add</button>
+        </div>
+        <div class="cull-sub" style="text-align:center;margin:0;">Tip: paste many at once, one per line — they'll all be added.</div>
+        <div class="cull-buttons">
+          <button class="btn" id="custom-done">Done</button>
+        </div>
+      </div>
+      <div class="cull-list" id="custom-list"></div>
+    </div>
+  `;
+
+  const listEl = document.getElementById('custom-list');
+  const input = document.getElementById('custom-input');
+  const countEl = document.getElementById('custom-count');
+
+  function rebuild() {
+    countEl.textContent = customs.length;
+    const frag = document.createDocumentFragment();
+    if (customs.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'custom-empty';
+      empty.textContent = 'No custom names yet. Add some above.';
+      frag.appendChild(empty);
+    } else {
+      // newest first
+      [...customs].reverse().forEach(name => {
+        const div = document.createElement('div');
+        div.className = 'cull-item custom-item';
+        const span = document.createElement('span');
+        span.textContent = name;
+        const rm = document.createElement('button');
+        rm.className = 'custom-remove';
+        rm.textContent = '×';
+        rm.title = 'Remove';
+        rm.addEventListener('click', (e) => {
+          e.stopPropagation();
+          customs = customs.filter(n => n !== name);
+          saveCustom(customs);
+          updateFooter();
+          rebuild();
+        });
+        div.appendChild(span);
+        div.appendChild(rm);
+        frag.appendChild(div);
+      });
+    }
+    listEl.innerHTML = '';
+    listEl.appendChild(frag);
+  }
+
+  function addNames(raw) {
+    const lines = raw.split('\n').map(s => s.trim()).filter(Boolean);
+    if (lines.length === 0) return 0;
+    const existing = new Set(customs);
+    let added = 0;
+    let skipped = 0;
+    for (const n of lines) {
+      if (existing.has(n)) { skipped++; continue; }
+      if (builtInSet.has(n)) { skipped++; continue; } // already in built-in list
+      existing.add(n);
+      customs.push(n);
+      added++;
+    }
+    if (added > 0) saveCustom(customs);
+    if (added > 0) updateFooter();
+    return { added, skipped };
+  }
+
+  function handleAdd() {
+    const v = input.value;
+    if (!v.trim()) return;
+    const result = addNames(v);
+    input.value = '';
+    rebuild();
+    if (result && result.skipped > 0) {
+      // brief flash on the input
+      input.placeholder = `Added ${result.added}, skipped ${result.skipped} duplicate${result.skipped===1?'':'s'}`;
+      setTimeout(() => { input.placeholder = 'Type a name…'; }, 2000);
+    }
+    input.focus();
+  }
+
+  document.getElementById('custom-add').addEventListener('click', handleAdd);
+  input.addEventListener('keydown', (e) => {
+    // Enter alone submits, Shift+Enter inserts newline (for paste workflows it's fine since paste preserves \n)
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleAdd();
+    }
+  });
+  document.getElementById('custom-done').addEventListener('click', renderSetup);
+
+  rebuild();
+  setTimeout(() => input.focus(), 100);
 }
 
 function startTournament(size) {
@@ -1170,7 +1368,7 @@ function startTournament(size) {
   history = [];
   starred = [];
   document.getElementById('subtitle').textContent =
-    'Two names enter. One stays. Last name standing wins.';
+    'Pick the winner. The loser is out.';
   drawDuel();
 }
 
@@ -1226,7 +1424,7 @@ function renderDuel(a, b) {
         <span class="card-corner left">— A —</span>
         <div class="card-name"></div>
         <div class="card-flourish">· · ·</div>
-        <div class="card-prompt">tap card to keep</div>
+        <div class="card-prompt">tap to pick</div>
       </div>
 
       <div class="versus">vs</div>
@@ -1236,7 +1434,7 @@ function renderDuel(a, b) {
         <span class="card-corner left">— B —</span>
         <div class="card-name"></div>
         <div class="card-flourish">· · ·</div>
-        <div class="card-prompt">tap card to keep</div>
+        <div class="card-prompt">tap to pick</div>
       </div>
     </div>
 
@@ -1303,7 +1501,7 @@ function showSavedPanel() {
     <div class="modal">
       <button class="modal-close" id="modal-close">×</button>
       <h3>Saved Names</h3>
-      <p class="modal-sub">Names you starred during the tournament. Persist even after the tournament ends.</p>
+      <p class="modal-sub">Names you starred during picking. Kept separately from the bracket.</p>
       ${starred.length === 0 ? `
         <div class="modal-empty">No saved names yet. Tap the ☆ on any card to save it.</div>
       ` : `
@@ -1425,17 +1623,17 @@ function renderWinner(name) {
   const top = runnersUp.slice(-8).reverse();
   const starredCopy = [...starred];
 
-  document.getElementById('subtitle').textContent = 'A winner has emerged.';
+  document.getElementById('subtitle').textContent = 'Done.';
 
   const screen = document.getElementById('screen');
   screen.innerHTML = `
     <div class="winner-screen">
-      <div class="winner-eyebrow">The Champion</div>
+      <div class="winner-eyebrow">Winner</div>
       <div class="winner-name" id="winner-name"></div>
-      <div class="winner-subtitle">Survived ${totalPicks} duels. ${totalNames - 1} names eliminated.</div>
-      <div class="winner-stats">${totalNames} contenders · ${roundNumber} rounds</div>
+      <div class="winner-subtitle">${totalPicks} matchups · ${totalNames - 1} names eliminated</div>
+      <div class="winner-stats">${totalNames} in the bracket · ${roundNumber} rounds</div>
       <div class="winner-buttons">
-        <button class="btn btn-blood" id="new-tourney">New Tournament</button>
+        <button class="btn btn-blood" id="new-tourney">Start Over</button>
         <button class="btn" id="copy-name">Copy Name</button>
       </div>
       ${starredCopy.length > 0 ? `
@@ -1449,7 +1647,7 @@ function renderWinner(name) {
       ` : ''}
       ${top.length > 0 ? `
         <div class="runners-up">
-          <h3>Last to fall</h3>
+          <h3>Final rounds</h3>
           <ol class="runners-list" id="runners-list"></ol>
         </div>
       ` : ''}
@@ -1524,6 +1722,15 @@ document.addEventListener('keydown', e => {
   }
 });
 
+function updateFooter() {
+  const el = document.getElementById('footer');
+  if (el) {
+    const total = allNames().length;
+    el.textContent = total + ' names in the pool';
+  }
+}
+
+updateFooter();
 renderSetup();
 </script>
 </body>
